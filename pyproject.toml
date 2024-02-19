@@ -1,0 +1,22 @@
+[project]
+name = "python-query"
+version = "v0.0.1"
+dependencies = []
+requires-python = ">=3.11"
+authors = [
+  {name = "Nuno Antunes", email = "afonso.antunes@live.com.pt"},
+]
+maintainers = [
+  {name = "Nuno Antunes", email = "afonso.antunes@live.com.pt"},
+]
+description = "Like React Query but for Python"
+readme = "README.md"
+license = {file = "LICENSE"}
+keywords = ["query", "react-query", "python"]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Programming Language :: Python"
+]
+
+[project.optional-dependencies]
+test = ["pytest", "pytest-asyncio"]

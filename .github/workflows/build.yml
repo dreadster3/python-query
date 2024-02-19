@@ -1,0 +1,35 @@
+name: Build and Test CI
+
+on:
+  push:
+    branches:
+      - master
+      - feature/initial_setup
+  pull_request:
+    branches:
+      - master
+
+env:
+  PYTHON_VERSION: 3.11
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.11 3.12 3.13]
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ env.PYTHON_VERSION }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install packages
+        run: pip install ",[test]"
+
+      - name: Run tests
+        run: pytest
