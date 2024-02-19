@@ -64,8 +64,8 @@ class Query(Generic[TData]):
 
         for k1, k2 in zip(self._key, key):
             if isinstance(k1, dict) and isinstance(k2, dict):
-                for k in k1.keys():
-                    if k not in k2:
+                for k in k2.keys():
+                    if k not in k1:
                         return False
                     if k1[k] != k2[k]:
                         return False
