@@ -83,6 +83,9 @@ jobs:
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
+      - name: Install packages
+        run: pip install ".[dev]"
+
       - name: Build
         run: python -m build
 
