@@ -16,17 +16,14 @@ jobs:
       matrix:
         python-version: [3.11 3.12 3.13]
 
-    env:
-      PYTHON_VERSION: ${{ matrix.python-version }}
-
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Set up Python ${{ env.PYTHON_VERSION }}
+      - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v5
         with:
-          python-version: ${{ env.PYTHON_VERSION }}
+          python-version: ${{ matrix.python-version }}
 
       - name: Install packages
         run: pip install ".[test]"
