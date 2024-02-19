@@ -85,5 +85,5 @@ jobs:
       - name: Install packages
         run: pip install ".[release]"
 
-      - name: Build for ${{ matrix.os }}
-        run: python -m build
+      - name: Build wheels
+        uses: pypa/cibuildwheel@v2.16.5

@@ -1,5 +1,5 @@
 [project]
-name = "pyquery"
+name = "python-query"
 version = "v0.0.1-beta01"
 dependencies = []
 requires-python = ">=3.11"
@@ -38,3 +38,6 @@ addopts = "-v --cov=python_query --cov=tests --log-level=DEBUG"
 [tool.autopep8]
 max-line-length = 75
 aggressive = 3
+
+[tool.setuptools.packages.find]
+include = ["python_query"]
