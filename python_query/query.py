@@ -1,28 +1,35 @@
+from __future__ import annotations
+
 import inspect
 import logging
 import math
 from datetime import datetime
-from typing import Any, Generic, Union
+from typing import Awaitable, Callable, Generic, Union
 
 import python_query.utils as utils
 from python_query.query_options import QueryOptions
-from python_query.types import TData, TFn, TQueryKey, TQueryOptions
+from python_query.types import TData, TQueryKey, TQueryOptions
 
 
 class NotSet:
     _instance = None
 
-    def __new__(cls):
+    def __new__(cls) -> NotSet:
         if cls._instance is None:
             cls._instance = super().__new__(cls)
         return cls._instance
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return "NotSet"
 
 
 class Query(Generic[TData]):
-    def __init__(self, key: TQueryKey, fn: TFn, query_options: TQueryOptions = QueryOptions()):
+    def __init__(self,
+                 key: TQueryKey,
+                 fn: Callable[[],
+                              Union[Awaitable[TData],
+                                    TData]],
+                 query_options: TQueryOptions = QueryOptions()):
         if isinstance(query_options, dict):
             query_options = QueryOptions(**query_options)
 
@@ -39,7 +46,8 @@ class Query(Generic[TData]):
         self._logger = logging.getLogger(self.__class__.__name__)
 
     def time_until_stale(self) -> int:
-        return math.ceil(self._cache_time - (datetime.now().timestamp() - self._updated_at))
+        return math.ceil(self._cache_time -
+                         (datetime.now().timestamp() - self._updated_at))
 
     def get_data(self) -> Union[TData, NotSet]:
         return self._data
@@ -67,7 +75,7 @@ class Query(Generic[TData]):
 
         return True
 
-    async def __fetch_async(self) -> Any:
+    async def __fetch_async(self) -> TData:
         if inspect.iscoroutinefunction(self._fn):
             self._data = await self._fn()
         elif inspect.isfunction(self._fn):
@@ -76,13 +84,17 @@ class Query(Generic[TData]):
             raise ValueError(
                 "Query function must be a coroutine or a regular function")
 
+        if isinstance(self._data, NotSet):
+            raise ValueError(
+                "Query function must return a value, not NotSet")
+
         self._updated_at = datetime.now().timestamp()
         return self._data
 
     async def fetch_async(self) -> TData:
         if isinstance(self._data, NotSet):
             self._logger.debug(
-                f"Fetching data for %s for the first time", self._hash)
+                "Fetching data for %s for the first time", self._hash)
             return await self.__fetch_async()
 
         if self.time_until_stale() <= 0:

@@ -1,3 +1,5 @@
+from typing import Any, Dict
+
 from python_query.types import TQueryKey
 
 
@@ -17,5 +19,5 @@ def hash_query_key(key: TQueryKey) -> str:
     return str(hash("".join(final_key)))
 
 
-def sort_dict_by_key(dict_):
+def sort_dict_by_key(dict_: Dict[str, Any]) -> Dict[str, Any]:
     return dict(sorted(dict_.items(), key=lambda item: item[0]))

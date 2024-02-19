@@ -1,9 +1,10 @@
 import pytest
+
 from python_query.query_cache import QueryCache
 
 
 @pytest.mark.asyncio
-async def test_query_cache():
+async def test_query_cache() -> None:
     query_cache = QueryCache({"cache_time": 1})
 
     query_cache["test"] = lambda: 1
@@ -14,7 +15,7 @@ async def test_query_cache():
 
 
 @pytest.mark.asyncio
-async def test_query_cache_overwrite():
+async def test_query_cache_overwrite() -> None:
     query_cache = QueryCache({"cache_time": 1})
 
     query_cache["test"] = lambda: 1
@@ -26,11 +27,11 @@ async def test_query_cache_overwrite():
 
 
 @pytest.mark.asyncio
-async def test_query_cache_not_exact():
+async def test_query_cache_not_exact() -> None:
     query_cache = QueryCache({"cache_time": 1})
 
-    query_cache[["test", "1"]] = lambda: 1  # type: ignore
-    query_cache[["test", "2"]] = lambda: 2  # type: ignore
+    query_cache[["test", "1"]] = lambda: 1  # pyright: ignore
+    query_cache[["test", "2"]] = lambda: 2  # pyright: ignore
 
     queries = query_cache.get_queries_not_exact("test")
 

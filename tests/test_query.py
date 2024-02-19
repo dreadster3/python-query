@@ -1,34 +1,35 @@
 import pytest
+
 from python_query.query import Query
 
 
-def test_query_hash():
+def test_query_hash() -> None:
     query1 = Query("test", lambda: 1)
     query2 = Query("test", lambda: 2)
 
     assert query1.get_hash() == query2.get_hash()
 
 
-def test_query_complex_hash():
+def test_query_complex_hash() -> None:
     query1 = Query(["test", {"page": 1, "per_page": 2}], lambda: 1)
     query2 = Query(["test", {"per_page": 2, "page": 1}], lambda: 2)
 
     assert query1.get_hash() == query2.get_hash()
 
 
-def test_query_match_str():
+def test_query_match_str() -> None:
     query1 = Query("test", lambda: 1)
 
     assert query1.matches_key("test")
 
 
-def test_query_match_list():
+def test_query_match_list() -> None:
     query1 = Query(["test", "1"], lambda: 1)
 
     assert query1.matches_key(["test", "1"])
 
 
-def test_query_match_list_not_exact():
+def test_query_match_list_not_exact() -> None:
     query1 = Query(["test", "1"], lambda: 1)
 
     assert query1.matches_key("test", False)
@@ -36,7 +37,7 @@ def test_query_match_list_not_exact():
     assert query1.matches_key(["test", "1"], False)
 
 
-def test_query_time_until_stale():
+def test_query_time_until_stale() -> None:
     query = Query("test", lambda: 1, {"cache_time": 1})
     time_until_stale = query.time_until_stale()
 
@@ -45,7 +46,7 @@ def test_query_time_until_stale():
 
 
 @pytest.mark.asyncio
-async def test_fetch():
+async def test_fetch() -> None:
     query = Query("test", lambda: 1)
 
     before = query._updated_at
@@ -57,10 +58,10 @@ async def test_fetch():
 
 
 @pytest.mark.asyncio
-async def test_refetch():
+async def test_refetch() -> None:
     count = 0
 
-    def fn():
+    def fn() -> int:
         nonlocal count
         count += 1
         return count
@@ -78,10 +79,10 @@ async def test_refetch():
 
 
 @pytest.mark.asyncio
-async def test_norefetch():
+async def test_norefetch() -> None:
     count = 0
 
-    def fn():
+    def fn() -> int:
         nonlocal count
         count += 1
         return count

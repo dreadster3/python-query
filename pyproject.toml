@@ -1,6 +1,6 @@
 [project]
-name = "python-query"
-version = "v0.0.1"
+name = "pyquery"
+version = "v0.0.1-beta01"
 dependencies = []
 requires-python = ">=3.11"
 authors = [
@@ -19,4 +19,13 @@ classifiers = [
 ]
 
 [project.optional-dependencies]
-test = ["pytest", "pytest-asyncio"]
+dev = ["mypy", "flake8", "build", "autopep8", "pytest"]
+test = ["pytest", "pytest-asyncio", "pytest-cov", "coverage"]
+lint = ["mypy", "flake8", "build"]
+
+[tool.pytest.ini_options]
+addopts = "-v --cov=python_query --cov=tests"
+
+[tool.autopep8]
+max-line-length = 75
+aggressive = 3
