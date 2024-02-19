@@ -29,7 +29,7 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
 
       - name: Install packages
-        run: pip install ",[test]"
+        run: pip install ".[test]"
 
       - name: Run tests
         run: pytest
