@@ -2,8 +2,9 @@ name: Release Workflow
 
 on:
   workflow_dispatch:
-  tags:
-    - v*
+  push:
+    tags:
+      - v*
 
 jobs:
   build:
