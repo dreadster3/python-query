@@ -1,12 +1,3 @@
-# Python Query
-
-Python library heavily inspired by [react-query](https://tanstack.com/query/v4/).
-
-## Getting Started
-
-Here is a compilation of some actions that are achievable with this library.
-
-```python
 import asyncio
 
 import python_query
@@ -43,4 +34,3 @@ async def main():
 
 
 asyncio.run(main())
-```
