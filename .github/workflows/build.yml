@@ -67,10 +67,7 @@ jobs:
           path: htmlcov
 
   build:
-    strategy:
-      matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
     env:
       PYTHON_VERSION: 3.x
     steps:
@@ -85,5 +82,5 @@ jobs:
       - name: Install packages
         run: pip install ".[release]"
 
-      - name: Build wheels
-        uses: pypa/cibuildwheel@v2.16.5
+      - name: Build
+        run: python -m build
