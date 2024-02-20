@@ -1,0 +1,86 @@
+name: Build and Test CI
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - master
+      - feature/initial_setup
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    env:
+      PYTHON_VERSION: 3.x
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ env.PYTHON_VERSION }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install packages
+        run: pip install ".[lint]"
+
+      - name: MyPy
+        run: mypy
+
+      - name: Flake8
+        run: flake8 python_query
+
+  tests:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.11, 3.12]
+
+    env:
+      PYTHON_VERSION: ${{ matrix.python-version }}
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ env.PYTHON_VERSION }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install packages
+        run: pip install ".[test]"
+
+      - name: Run tests
+        run: pytest
+
+      - name: Coverage HTML
+        run: python -m coverage html
+
+      - name: Upload Coverage
+        uses: actions/upload-artifact@v3
+        with:
+          name: coverage
+          path: htmlcov
+
+  build:
+    runs-on: ubuntu-latest
+    env:
+      PYTHON_VERSION: 3.x
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ env.PYTHON_VERSION }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install packages
+        run: pip install ".[release]"
+
+      - name: Build
+        run: python -m build

@@ -1,0 +1,43 @@
+[project]
+name = "python-query"
+version = "v0.0.1-beta01"
+dependencies = []
+requires-python = ">=3.11"
+authors = [{ name = "Nuno Antunes", email = "afonso.antunes@live.com.pt" }]
+maintainers = [{ name = "Nuno Antunes", email = "afonso.antunes@live.com.pt" }]
+description = "Like React Query but for Python"
+readme = { file = "README.md", content-type = "text/markdown" }
+license = { file = "LICENSE" }
+keywords = ["query", "react-query", "python"]
+classifiers = [
+  "Development Status :: 1 - Planning",
+  "Operating System :: MacOS",
+  "Operating System :: Microsoft :: Windows",
+  "Operating System :: POSIX",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: GNU Affero General Public License v3",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+]
+
+[project.optional-dependencies]
+dev = ["mypy", "flake8", "autopep8", "pytest", "pytest-asyncio"]
+test = ["pytest", "pytest-asyncio", "pytest-cov", "coverage"]
+lint = ["mypy", "flake8", "build"]
+release = ["build"]
+
+[project.urls]
+"Github:Repository" = "https://github.com/dreadster3/python-query.git"
+"Github:Issues" = "https://github.com/dreadster3/python-query/issues"
+
+
+[tool.pytest.ini_options]
+addopts = "-v --cov=python_query --cov=tests --log-level=DEBUG"
+
+[tool.autopep8]
+max-line-length = 75
+aggressive = 3
+
+[tool.setuptools.packages.find]
+include = ["python_query"]
