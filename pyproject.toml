@@ -37,7 +37,7 @@ addopts = "-v --cov=python_query --cov=tests --log-level=DEBUG"
 
 [tool.autopep8]
 max-line-length = 75
-aggressive = 3
+aggressive = 1
 
 [tool.setuptools.packages.find]
 include = ["python_query"]
