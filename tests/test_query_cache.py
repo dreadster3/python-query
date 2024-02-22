@@ -56,3 +56,12 @@ async def test_query_cache_not_exact_complex() -> None:
     assert await queries[0].fetch_async() == 1
     assert await queries[1].fetch_async() == 2
     assert queries[0].get_hash() != queries[1].get_hash()
+
+
+def test_query_cache_not_existing() -> None:
+    query_cache = QueryCache({"cache_time": 1})
+
+    assert query_cache.get_query("test") is None
+
+    with pytest.raises(KeyError):
+        query_cache["test"]
