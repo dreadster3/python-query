@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import inspect
+import asyncio
 import logging
 import math
 from datetime import datetime
@@ -38,12 +38,26 @@ class Query(Generic[TData]):
 
         self._hash = utils.hash_query_key(key)
         self._key = key
-        self._fn = fn
+        self._fn = self.__wrap_fn(fn)
         self._data: TData | NotSet = NotSet()
         # Cache time in seconds
         self._cache_time = query_options._cache_time
         self._updated_at = datetime.now().timestamp()
         self._logger = logging.getLogger(self.__class__.__name__)
+
+    def __wrap_fn(self,
+                  fn: Callable[[],
+                               Union[Awaitable[TData],
+                                     TData]]) -> Callable[[],
+                                                          Awaitable[TData]]:
+        if asyncio.iscoroutinefunction(fn):
+            return fn
+
+        async def wrapper() -> TData:
+            result = asyncio.get_event_loop().run_in_executor(None, fn)
+            return await result
+
+        return wrapper
 
     def time_until_stale(self) -> int:
         return math.ceil(self._cache_time -
@@ -76,13 +90,7 @@ class Query(Generic[TData]):
         return True
 
     async def __fetch_async(self) -> TData:
-        if inspect.iscoroutinefunction(self._fn):
-            self._data = await self._fn()
-        elif inspect.isfunction(self._fn):
-            self._data = self._fn()
-        else:
-            raise ValueError(
-                "Query function must be a coroutine or a regular function")
+        self._data = await self._fn()
 
         if isinstance(self._data, NotSet):
             raise ValueError(
@@ -102,4 +110,6 @@ class Query(Generic[TData]):
                 "Data for %s is stale, fetching new data", self._hash)
             return await self.__fetch_async()
 
+        self._logger.debug(
+            "Data for %s is not stale, returning cached data", self._hash)
         return self._data

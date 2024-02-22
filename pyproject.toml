@@ -1,7 +1,7 @@
 [project]
 name = "python-query"
 version = "v0.0.1-beta02"
-dependencies = []
+dependencies = ["nest-asyncio"]
 requires-python = ">=3.11"
 authors = [{ name = "Nuno Antunes", email = "afonso.antunes@live.com.pt" }]
 maintainers = [{ name = "Nuno Antunes", email = "afonso.antunes@live.com.pt" }]

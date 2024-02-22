@@ -1,4 +1,8 @@
+import asyncio
+import functools
 from typing import Any, Awaitable, Callable, Dict, List, Optional, Union
+
+import nest_asyncio
 
 import python_query.utils as utils
 from python_query.query import Query
@@ -47,3 +51,69 @@ class QueryCache:
 
     async def get_query_data_async(self, key: TQueryKey) -> Any:
         return await self[key].fetch_async()
+
+    TQueryKeyDecorator = TQueryKey | Callable[[], TQueryKey]
+
+    def cache(self,
+              key: TQueryKeyDecorator) -> Callable[[],
+                                                   Union[Awaitable[TData],
+                                                         TData]]:
+        def wrapper(fn: Callable[[], Union[Awaitable[TData], TData]], *
+                    args, **kwargs) -> Callable[[], Union[Awaitable[TData], TData]]:
+            if asyncio.iscoroutinefunction(fn):
+                @functools.wraps(fn)
+                async def wrapped(*args: Any, **kwargs: Any) -> TData:
+                    if callable(key):
+                        final_key = key(*args, **kwargs)
+                    else:
+                        final_key = key
+
+                    async def inner() -> TData:
+                        return await fn(*args, **kwargs)
+
+                    if query := self.get_query(final_key) is None:
+                        query = self.add_query(
+                            final_key, inner)
+
+                    return await query.fetch_async()
+
+            else:
+                def wrapped(*args: Any, **kwargs: Any) -> TData:
+                    if callable(key):
+                        final_key = key(*args, **kwargs)
+                    else:
+                        final_key = key
+
+                    def inner() -> TData:
+                        return fn(*args, **kwargs)
+
+                    if (query := self.get_query(final_key)) is None:
+                        query = self.add_query(
+                            final_key, inner)
+
+                    loop = asyncio.get_event_loop()
+                    nest_asyncio.apply(loop)
+                    return loop.run_until_complete(query.fetch_async())
+
+            return wrapped
+        return wrapper
+
+    def cache_async(self, key: TQueryKey):
+        def wrapper(fn: Callable[[],
+                                 Union[Awaitable[TData],
+                                       TData]]) -> Callable[[],
+                                                            Awaitable[TData]]:
+            @ functools.wraps(fn)
+            async def wrapped(*args: Any, **kwargs: Any) -> TData:
+                async def inner() -> TData:
+                    if isinstance(fn, Awaitable):
+                        return await fn(*args, **kwargs)
+                    return fn(*args, **kwargs)
+
+                if query := self.get_query(key) is None:
+                    query = self.add_query(
+                        key, inner)
+
+                return await query.fetch_async()
+            return wrapped
+        return wrapper
