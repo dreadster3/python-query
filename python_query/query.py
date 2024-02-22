@@ -54,8 +54,13 @@ class Query(Generic[TData]):
             return fn
 
         async def wrapper() -> TData:
-            result = asyncio.get_event_loop().run_in_executor(None, fn)
-            return await result
+            result = await asyncio.get_event_loop().run_in_executor(None, fn)
+
+            if isinstance(result, Awaitable):
+                raise ValueError(
+                    "Wrapper function must return a value, not an Awaitable")
+
+            return result
 
         return wrapper
 
