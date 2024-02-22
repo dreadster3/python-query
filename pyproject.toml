@@ -1,7 +1,7 @@
 [project]
 name = "python-query"
-version = "v0.0.1-beta01"
-dependencies = []
+version = "v0.0.1-beta02"
+dependencies = ["nest-asyncio >= 1.6.0, < 2.0.0"]
 requires-python = ">=3.11"
 authors = [{ name = "Nuno Antunes", email = "afonso.antunes@live.com.pt" }]
 maintainers = [{ name = "Nuno Antunes", email = "afonso.antunes@live.com.pt" }]
@@ -10,15 +10,15 @@ readme = { file = "README.md", content-type = "text/markdown" }
 license = { file = "LICENSE" }
 keywords = ["query", "react-query", "python"]
 classifiers = [
-  "Development Status :: 1 - Planning",
-  "Operating System :: MacOS",
-  "Operating System :: Microsoft :: Windows",
-  "Operating System :: POSIX",
-  "Intended Audience :: Developers",
-  "License :: OSI Approved :: GNU Affero General Public License v3",
-  "Programming Language :: Python",
-  "Programming Language :: Python :: 3.11",
-  "Programming Language :: Python :: 3.12",
+	"Development Status :: 1 - Planning",
+	"Operating System :: MacOS",
+	"Operating System :: Microsoft :: Windows",
+	"Operating System :: POSIX",
+	"Intended Audience :: Developers",
+	"License :: OSI Approved :: GNU Affero General Public License v3",
+	"Programming Language :: Python",
+	"Programming Language :: Python :: 3.11",
+	"Programming Language :: Python :: 3.12",
 ]
 
 [project.optional-dependencies]
@@ -37,7 +37,7 @@ addopts = "-v --cov=python_query --cov=tests --log-level=DEBUG"
 
 [tool.autopep8]
 max-line-length = 75
-aggressive = 3
+aggressive = 1
 
 [tool.setuptools.packages.find]
 include = ["python_query"]

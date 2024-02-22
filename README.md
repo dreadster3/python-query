@@ -44,3 +44,51 @@ async def main():
 
 asyncio.run(main())
 ```
+
+## Decorators
+
+The library also provides decorators to easily create queries.
+
+```python
+import asyncio
+
+import python_query
+
+query_cache = python_query.QueryCache()
+
+
+# Static keys
+@query_cache.cache(["key", "1"])
+async def function() -> None:
+    await asyncio.sleep(1)
+    return 2
+
+# Generate keys based on the arguments
+@query_cache.cache(lambda number: ["key", "1", number])
+async def function2(number : int) -> None:
+    await asyncio.sleep(1)
+    return number
+
+
+async def main():
+    # Only added to cache when called first time
+    assert query_cache.get_query(["key", "1"]) is None
+
+    assert await function() == 2
+    assert query_cache.get_query(["key", "1"]) is not None
+    assert await query_cache.get_query(["key", "1"]).fetch_async() == 2
+    assert await function() == 2
+
+
+    # Only added to cache when called first time
+    assert query_cache.get_query(["key", "1", 3]) is None
+
+    assert await function2(3) == 3
+    assert query_cache.get_query(["key", "1", 2]) is None
+    assert query_cache.get_query(["key", "1", 3]) is not None
+    assert await query_cache.get_query(["key", "1", 3]).fetch_async() == 3
+    assert await function2(3) == 3
+
+
+asyncio.run(main())
+```
