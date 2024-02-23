@@ -103,7 +103,7 @@ async def test_decorator_async() -> None:
     assert await query.fetch_async() == 1
 
 
-def test_query_cache_reset():
+def test_query_cache_reset() -> None:
     query_cache = QueryCache({"cache_time": 1})
 
     query_cache["test"] = lambda: 1
