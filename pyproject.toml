@@ -36,8 +36,8 @@ release = ["build"]
 addopts = "-v --cov=python_query --cov=tests --log-level=DEBUG"
 
 [tool.autopep8]
-max-line-length = 75
-aggressive = 1
+max-line-length = 100
+aggressive = 3
 
 [tool.setuptools.packages.find]
 include = ["python_query"]

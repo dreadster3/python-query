@@ -70,7 +70,7 @@ def test_query_cache_not_existing() -> None:
 def test_decorator_sync() -> None:
     query_cache = QueryCache({"cache_time": 1})
 
-    @query_cache.cache(["test"])
+    @query_cache.cache(query_cache, ["test"])
     def test() -> int:
         return 1
 
@@ -88,7 +88,7 @@ def test_decorator_sync() -> None:
 async def test_decorator_async() -> None:
     query_cache = QueryCache({"cache_time": 1})
 
-    @query_cache.cache(["test"])
+    @query_cache.cache(query_cache, ["test"])
     async def test() -> int:
         return 1
 
@@ -101,3 +101,15 @@ async def test_decorator_async() -> None:
     assert query._data == 1
     assert await test() == 1
     assert await query.fetch_async() == 1
+
+
+def test_query_cache_reset():
+    query_cache = QueryCache({"cache_time": 1})
+
+    query_cache["test"] = lambda: 1
+
+    assert query_cache.get_query("test") is not None
+
+    query_cache.reset()
+
+    assert query_cache.get_query("test") is None

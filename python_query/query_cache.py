@@ -1,6 +1,8 @@
+from __future__ import annotations
+
 import asyncio
 import functools
-from typing import (Any, Awaitable, Callable, Dict, List, Optional, Union)
+from typing import Any, Awaitable, Callable, Dict, List, Optional, Union
 
 import nest_asyncio
 
@@ -54,7 +56,11 @@ class QueryCache:
     async def get_query_data_async(self, key: TQueryKey) -> Any:
         return await self[key].fetch_async()
 
-    def cache(self,
+    def reset(self) -> None:
+        self.__queries.clear()
+
+    @classmethod
+    def cache(cls, query_cache: QueryCache | Callable[..., QueryCache],
               key: TQueryKeyDecorator) -> Callable[[TFunc[TParam, TRetType]],
                                                    TFunc[TParam, TRetType]]:
         def wrapper(fn: TFunc[TParam, TRetType]
@@ -63,16 +69,25 @@ class QueryCache:
                 @functools.wraps(fn)
                 async def wrapped_async(*args: TParam.args,
                                         **kwargs: TParam.kwargs) -> Any:
+                    if callable(query_cache):
+                        final_query_cache = utils.call_function_partial(
+                            query_cache, utils.is_class_method(fn), *args, **kwargs)
+                    else:
+                        final_query_cache = query_cache
+
                     if callable(key):
-                        final_key = key(*args, **kwargs)
+                        final_key = utils.call_function_partial(
+                            key, utils.is_class_method(fn), *args, **kwargs)
                     else:
                         final_key = key
 
                     async def inner() -> Any:
                         return await fn(*args, **kwargs)
 
-                    if (query := self.get_query(final_key)) is None:
-                        query = self.add_query(final_key, inner)
+                    if (query := final_query_cache.get_query(
+                            final_key)) is None:
+                        query = final_query_cache.add_query(
+                            final_key, inner)
 
                     result = await query.fetch_async()
                     return result
@@ -81,16 +96,24 @@ class QueryCache:
             else:
                 def wrapped(*args: TParam.args, **
                             kwargs: TParam.kwargs) -> Any:
+                    if callable(query_cache):
+                        final_query_cache = utils.call_function_partial(
+                            query_cache, utils.is_class_method(fn), *args, **kwargs)
+                    else:
+                        final_query_cache = query_cache
+
                     if callable(key):
-                        final_key = key(*args, **kwargs)
+                        final_key = utils.call_function_partial(
+                            key, utils.is_class_method(fn), *args, **kwargs)
                     else:
                         final_key = key
 
                     def inner() -> Any:
                         return fn(*args, **kwargs)
 
-                    if (query := self.get_query(final_key)) is None:
-                        query = self.add_query(
+                    if (query := final_query_cache.get_query(
+                            final_key)) is None:
+                        query = final_query_cache.add_query(
                             final_key, inner)
 
                     loop = asyncio.get_event_loop()
