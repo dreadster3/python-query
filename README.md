@@ -58,13 +58,13 @@ query_cache = python_query.QueryCache()
 
 
 # Static keys
-@query_cache.cache(["key", "1"])
+@QueryCache.cache(query_cache, ["key", "1"])
 async def function() -> None:
     await asyncio.sleep(1)
     return 2
 
 # Generate keys based on the arguments
-@query_cache.cache(lambda number: ["key", "1", number])
+@QueryCache.cache(query_cache, lambda number: ["key", "1", number])
 async def function2(number : int) -> None:
     await asyncio.sleep(1)
     return number

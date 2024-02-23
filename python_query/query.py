@@ -45,11 +45,8 @@ class Query(Generic[TData]):
         self._updated_at = datetime.now().timestamp()
         self._logger = logging.getLogger(self.__class__.__name__)
 
-    def __wrap_fn(self,
-                  fn: Callable[[],
-                               Union[Awaitable[TData],
-                                     TData]]) -> Callable[[],
-                                                          Awaitable[TData]]:
+    def __wrap_fn(self, fn: Callable[[], Union[Awaitable[TData], TData]]
+                  ) -> Callable[[], Awaitable[TData]]:
         if asyncio.iscoroutinefunction(fn):
             return fn
 
